@@ -1,0 +1,197 @@
+<% layout("/layouts/boilerplate") %>
+<style>
+  #filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 1.2rem;
+    opacity: 0.8;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+  }
+
+  .tax-info {
+    display: none;
+  }
+
+  .tax-toggle {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.25rem;
+    padding: 1rem;
+    margin-left: 3rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 300px;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
+  .listing-card {
+    flex: 1 1 calc(33.33% - 1rem);
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+  }
+
+  .listing-card[style="display: none;"] {
+    height: 0;
+  }
+
+  .hidden {
+    display: none;
+    scale: 0; /* Non-matching elements ke hide korbe */
+  }
+
+  .no-listings-message {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    color: gray;
+    display: none;
+  }
+</style>
+
+<body>
+  <div id="filters">
+    <div class="filter" onClick="filterByCategory('trending')">
+      <div class="filter-icon"><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('rooms')">
+      <div class="filter-icon"><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('iconic-cities')">
+      <div class="filter-icon"><i class="fa-solid fa-mountain-city"></i></div>
+      <p>Iconic Cities</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('mountains')">
+      <div class="filter-icon"><i class="fa-solid fa-mountain"></i></div>
+      <p>Mountains</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('castles')">
+      <div class="filter-icon"><i class="fa-brands fa-fort-awesome"></i></div>
+      <p>Castles</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('amazing-pools')">
+      <div class="filter-icon"><i class="fa-solid fa-person-swimming"></i></div>
+      <p>Amazing Pools</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('farms')">
+      <div class="filter-icon"><i class="fa-solid fa-cow"></i></div>
+      <p>Farms</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('camping')">
+      <div class="filter-icon"><i class="fa-solid fa-campground"></i></div>
+      <p>Camping</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('arctic')">
+      <div class="filter-icon"><i class="fa-regular fa-snowflake"></i></div>
+      <p>Arctic</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('domes')">
+      <div class="filter-icon"><i class="fa-solid fa-igloo"></i></div>
+      <p>Domes</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('boats')">
+      <div class="filter-icon"><i class="fa-solid fa-ship"></i></div>
+      <p>Boats</p>
+    </div>
+    <div class="filter" onClick="filterByCategory('all')">
+      <div class="filter-icon"><i class="fa-solid fa-globe"></i></div>
+      <p>All</p>
+    </div>
+
+    <div class="tax-toggle">
+      <div class="form-check-reverse form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="flexSwitchCheckDefault"
+        />
+        <label class="form-check-label" for="flexSwitchCheckDefault"
+          >Display total after taxes</label
+        >
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <!-- Display "No listings found" message if no listings are found -->
+    <% if (noListingsFound) { %>
+    <div class="no-listings-message">
+      <p>No matching listings are here.</p>
+    </div>
+    <% } else { %>
+    <div
+      class="row row-cols-1 w-100 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 mt-3"
+    >
+      <% for (let listing of allListings) { %>
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div
+          class="card col listing-card"
+          data-category="<%= listing.category %>"
+        >
+          <img
+            src="<%= listing.image.url %>"
+            class="card-img-top"
+            alt="listing_image"
+            style="height: 20rem; object-fit: cover"
+          />
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b>
+              <br />
+              &#8377;<%= listing.price.toLocaleString("en-IN") %> /night
+              <i class="tax-info"> &nbsp; &nbsp; +18% GST</i>
+            </p>
+          </div>
+        </div>
+      </a>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+</body>
+
+<script>
+  let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+  taxSwitch.addEventListener("click", () => {
+    let taxInfo = document.getElementsByClassName("tax-info");
+
+    for (info of taxInfo) {
+      if (info.style.display !== "inline") {
+        info.style.display = "inline";
+      } else {
+        info.style.display = "none";
+      }
+    }
+  });
+
+  // Filter listings by category
+  function filterByCategory(category) {
+    if (category === "all") {
+      window.location.href = "/listings";
+    } else {
+      window.location.href = `/listings?category=${category}`;
+    }
+  }
+</script>
